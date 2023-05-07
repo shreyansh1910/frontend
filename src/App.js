@@ -1,25 +1,37 @@
-import logo from './logo.svg';
+
 import './App.css';
 
-function App() {
+import React, { useState } from 'react';
+
+const App = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      setSelectedImage(imageUrl);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input type="file" onChange={handleImageUpload} />
+      {selectedImage && <img src={selectedImage} alt="Uploaded" />}
     </div>
   );
-}
+};
 
 export default App;
+
+
